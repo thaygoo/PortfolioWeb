@@ -71,7 +71,7 @@ const ContinuousBackground = () => (
 
 // --- HERO SECTION ---
 const HeroSection = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
   
   // La section recule légèrement (moins violent que 0.9)
@@ -111,15 +111,23 @@ const HeroSection = () => {
 
 // --- COMPOSANT PROJET : LE VRAI STACKING CARD EFFECT REFINÉ ---
 const ProjectCard = ({ project, index }: { project: typeof projects[0], index: number }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
-  // Recul léger sans arrondis
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
-  // Ombre profonde pour l'impression de plonger dans l'abysse
-  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const containerRef = useRef<HTMLElement>(null);
   
-  // Parallaxe sur l'image
+  // Cette animation se déclenche UNIQUEMENT quand la carte est fixée en haut et que la SUIVANTE commence à glisser dessus.
+  // start start: Le haut de CETTE carte touche le haut de l'écran.
+  // end start: Le bas de CETTE carte (qui fait 100vh de base) touche le haut de l'écran (soit 100vh de scroll plus tard).
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const yImage = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+
+  // Mouvement du halo : on veut l'animer PENDANT que la carte atterrit (glisse du bas de l'écran jusqu'en haut)
+  const { scrollYProgress: slideProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "start start"]
+  });
+  // Le halo balaye de droite vers la gauche exactement pendant l'apparition fluide de la carte
+  const leftHalo = useTransform(slideProgress, [0, 1], ["100%", "-100%"]);
   
   const isEven = index % 2 === 0;
 
@@ -128,10 +136,17 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
       ref={containerRef}
       id={`projet-${index}`}
       style={{ scale, transformOrigin: 'top center' }} 
-      className="sticky top-0 h-screen w-full flex items-center justify-center px-6 md:px-12 xl:px-24 bg-black shadow-[0_-30px_60px_rgba(0,0,0,1)] overflow-hidden"
+      className="sticky top-0 h-screen w-full flex items-center justify-center px-6 md:px-12 xl:px-24 bg-[#050505] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,1)] overflow-hidden"
     >
-      {/* Ombre d'assombrissement pour la profondeur */}
-      <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-black z-20 pointer-events-none" />
+      {/* Halo lumineux qui voyage de façon autonome et propre à cette carte */}
+      <motion.div 
+        style={{ left: leftHalo }}
+        className="absolute top-0 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-20" 
+      />
+      
+      {/* Ombre d'assombrissement. Protège du contenu précédent et masque le halo quand la carte s'efface */}
+      <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-black z-30 pointer-events-none" />
+      
       <div className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} gap-12 lg:gap-24 w-full max-w-screen-2xl items-center relative z-10`}>
           
           {/* TEXTES - Typographie très aérée et raffinée (Apple style) */}
@@ -178,8 +193,24 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
 
 // --- FOOTER MASSIF ---
 const FooterSection = () => {
+  const containerRef = useRef<HTMLElement>(null);
+  
+  // Le même schéma de halo pour le footer
+  const { scrollYProgress: slideProgress } = useScroll({ target: containerRef, offset: ["start end", "start start"] });
+  const leftHalo = useTransform(slideProgress, [0, 1], ["100%", "-100%"]);
+
   return (
-    <footer id="contact" className="relative h-screen w-full bg-black flex flex-col items-center justify-center px-6 shadow-[0_-30px_60px_rgba(0,0,0,1)] z-[100] overflow-hidden">
+    <motion.footer 
+      ref={containerRef} 
+      id="contact" 
+      className="sticky top-0 h-screen w-full bg-[#050505] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,1)] flex flex-col items-center justify-center px-6 z-[100] overflow-hidden"
+    >
+      {/* Halo lumineux qui voyage */}
+      <motion.div 
+        style={{ left: leftHalo }}
+        className="absolute top-0 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-20" 
+      />
+      
       {/* Éclairage directionnel dramatique venant du haut */}
       <div className="absolute top-0 inset-x-0 mx-auto w-full h-[40vh] bg-gradient-to-b from-accent/10 to-transparent pointer-events-none" />
 
@@ -206,7 +237,7 @@ const FooterSection = () => {
           © {new Date().getFullYear()} — CRÉÉ AVEC RIGUEUR
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }
 
