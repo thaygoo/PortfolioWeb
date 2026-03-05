@@ -74,38 +74,38 @@ const HeroSection = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
   
-  // Dès le premier pixel de scroll, le hero devient une carte qui se range !
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.4]);
-  // IMPORTANT : L'ajout de bordures arrondies PENDANT le scale évite le look "bug d'affichage bande noire"
-  const borderRadius = useTransform(scrollYProgress, [0, 0.2], ["0rem", "2.5rem"]);
+  // La section recule légèrement (moins violent que 0.9)
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  // Au lieu de jouer sur l'opacité ou les bords ronds, on crée une ombre qui s'épaissit
+  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
   
   // Parallaxe interne du texte
-  const yText = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const yText = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
 
   return (
-    <div ref={containerRef} className="relative h-[120vh]">
-      <motion.section 
-        style={{ scale, opacity, borderRadius, transformOrigin: 'top center' }} 
-        className="sticky top-0 h-screen w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
-      >
-        <motion.div style={{ y: yText }} className="relative z-10 w-full max-w-5xl text-center flex flex-col items-center">
-          <p className="text-zinc-500 font-mono text-xs tracking-[0.3em] uppercase mb-8">
-            Portfolio // 2026
-          </p>
-          <h1 className="text-5xl md:text-7xl lg:text-[8.5rem] font-medium tracking-tighter leading-[0.95] mb-8 text-white">
-            Créateur <br/>
-            <span className="text-accent italic font-light pr-4">Numérique.</span>
-          </h1>
-          <p className="text-lg md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed px-4">
-            Ingénieur Front-end. Praticien IOT. Façonneur 3D.<br/>L'obsession du détail, du navigateur jusqu'au matériel.
-          </p>
-          <MagneticButton href="#projet-0" className="!bg-white !text-black hover:!bg-accent hover:!text-black px-8 py-4">
-            Découvrir l'expertise <ArrowDown className="w-4 h-4 ml-1" />
-          </MagneticButton>
-        </motion.div>
-      </motion.section>
-    </div>
+    <motion.section 
+      ref={containerRef}
+      style={{ scale, transformOrigin: 'top center' }} 
+      className="sticky top-0 h-screen w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
+    >
+      {/* Ombre d'assombrissement pour la profondeur */}
+      <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-black z-20 pointer-events-none" />
+      <motion.div style={{ y: yText }} className="relative z-10 w-full max-w-5xl text-center flex flex-col items-center">
+        <p className="text-zinc-500 font-mono text-xs tracking-[0.3em] uppercase mb-8">
+          Portfolio // 2026
+        </p>
+        <h1 className="text-5xl md:text-7xl lg:text-[8.5rem] font-medium tracking-tighter leading-[0.95] mb-8 text-white">
+          Créateur <br/>
+          <span className="text-accent italic font-light pr-4">Numérique.</span>
+        </h1>
+        <p className="text-lg md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed px-4">
+          Ingénieur Front-end. Praticien IOT. Façonneur 3D.<br/>L'obsession du détail, du navigateur jusqu'au matériel.
+        </p>
+        <MagneticButton href="#projet-0" className="!bg-white !text-black hover:!bg-accent hover:!text-black px-8 py-4">
+          Découvrir l'expertise <ArrowDown className="w-4 h-4 ml-1" />
+        </MagneticButton>
+      </motion.div>
+    </motion.section>
   );
 };
 
@@ -113,27 +113,26 @@ const HeroSection = () => {
 const ProjectCard = ({ project, index }: { project: typeof projects[0], index: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
+  // Recul léger sans arrondis
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  // Ombre profonde pour l'impression de plonger dans l'abysse
+  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
   
-  // Mêmes règles que le Hero : quand on scroll, la carte se "range" dans l'arrière fond !
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0.4]);
-  // La carte commence carré en haut de l'écran, et s'arrondit dès qu'elle recule
-  const borderRadius = useTransform(scrollYProgress, [0, 0.2], ["0vw", "2.5rem"]);
-  
-  // Parallaxe très fin sur l'image seule (Glisse continue)
+  // Parallaxe sur l'image
   const yImage = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   
   const isEven = index % 2 === 0;
 
   return (
-    <div ref={containerRef} id={`projet-${index}`} className="relative h-[120vh]">
-      <motion.section 
-        style={{ scale, opacity, borderRadius, transformOrigin: 'top center' }} 
-        // Le `bg-[#0a0a0a]` (presque noir) avec une fine bordure crée l'illusion d'une carte physique 
-        // qui vient se poser au-dessus de l'Ambient Background persistant de la page !
-        className="sticky top-0 h-[100vh] w-full flex items-center justify-center px-6 md:px-12 xl:px-24 bg-[#0a0a0a] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.8)] overflow-hidden"
-      >
-        <div className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} gap-12 lg:gap-24 w-full max-w-screen-2xl items-center relative z-10`}>
+    <motion.section 
+      ref={containerRef}
+      id={`projet-${index}`}
+      style={{ scale, transformOrigin: 'top center' }} 
+      className="sticky top-0 h-screen w-full flex items-center justify-center px-6 md:px-12 xl:px-24 bg-black shadow-[0_-30px_60px_rgba(0,0,0,1)] overflow-hidden"
+    >
+      {/* Ombre d'assombrissement pour la profondeur */}
+      <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-black z-20 pointer-events-none" />
+      <div className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} gap-12 lg:gap-24 w-full max-w-screen-2xl items-center relative z-10`}>
           
           {/* TEXTES - Typographie très aérée et raffinée (Apple style) */}
           <div className="w-full lg:w-5/12 flex flex-col justify-center order-2 lg:order-none">
@@ -174,14 +173,13 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
 
         </div>
       </motion.section>
-    </div>
   );
 };
 
 // --- FOOTER MASSIF ---
 const FooterSection = () => {
   return (
-    <footer id="contact" className="relative h-screen w-full bg-[#050505] flex flex-col items-center justify-center px-6 border-t border-white/10 z-[100] overflow-hidden rounded-t-[2.5rem]">
+    <footer id="contact" className="relative h-screen w-full bg-black flex flex-col items-center justify-center px-6 shadow-[0_-30px_60px_rgba(0,0,0,1)] z-[100] overflow-hidden">
       {/* Éclairage directionnel dramatique venant du haut */}
       <div className="absolute top-0 inset-x-0 mx-auto w-full h-[40vh] bg-gradient-to-b from-accent/10 to-transparent pointer-events-none" />
 
@@ -222,7 +220,23 @@ export default function Portfolio() {
     });
     function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
-    return () => lenis.destroy();
+    
+    // Intercepter les liens d'ancre pour un smooth scroll avec Lenis
+    const handleAnchorClick = (e: MouseEvent) => {
+      const target = e.currentTarget as HTMLAnchorElement;
+      const hash = target.getAttribute('href');
+      if (hash && hash.startsWith('#')) {
+        e.preventDefault();
+        lenis.scrollTo(hash, { offset: 0, duration: 2 });
+      }
+    };
+    const anchors = document.querySelectorAll('a[href^="#"]');
+    anchors.forEach(a => a.addEventListener('click', handleAnchorClick));
+
+    return () => {
+      anchors.forEach(a => a.removeEventListener('click', handleAnchorClick));
+      lenis.destroy();
+    };
   }, []);
 
   return (
