@@ -489,7 +489,7 @@ export default function Portfolio() {
     requestAnimationFrame(raf);
     
     // Intercepter les liens d'ancre pour un smooth scroll avec Lenis
-    const handleAnchorClick = (e: MouseEvent) => {
+    const handleAnchorClick = (e: Event) => {
       const target = e.currentTarget as HTMLAnchorElement;
       const hash = target.getAttribute('href');
       if (hash && hash.startsWith('#')) {
@@ -501,7 +501,7 @@ export default function Portfolio() {
     anchors.forEach(a => a.addEventListener('click', handleAnchorClick));
 
     // Si on a l'attribut spécial pour scroller en haut
-    const handleTopClick = (e: MouseEvent) => {
+    const handleTopClick = (e: Event) => {
       e.preventDefault();
       lenis.scrollTo(0, { duration: 2 });
     };
