@@ -5,7 +5,6 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { Github, Linkedin, Mail, ArrowDown, ChevronRight, Terminal, X } from "lucide-react";
 import Lenis from "lenis";
 
-// --- BOUTON MAGNÉTIQUE PREMIUM (Apple-like) ---
 const MagneticButton = ({ children, className, href, onClick, intensity = 0.1 }: { children: React.ReactNode; className?: string; href?: string; onClick?: () => void; intensity?: number }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -20,10 +19,9 @@ const MagneticButton = ({ children, className, href, onClick, intensity = 0.1 }:
   };
   const reset = () => setPosition({ x: 0, y: 0 });
 
-  const Wrapper = href ? "a" : "button";
+  const Wrapper = href ? "a" : "button" as any;
   return (
-    // @ts-ignore : Types simplifiés pour la démo
-    <Wrapper href={href} onClick={onClick} className="inline-block relative z-20">
+        <Wrapper href={href} onClick={onClick} className="inline-block relative z-20">
       <motion.div 
         ref={ref} 
         onMouseMove={handleMouse} 
@@ -38,62 +36,101 @@ const MagneticButton = ({ children, className, href, onClick, intensity = 0.1 }:
   );
 };
 
-// --- DATA PROJETS ---
 const projects = [
   {
     title: "Minishell",
     desc: "Création d'un interpréteur de commandes en C reproduisant le comportement de base de bash.",
     tech: ["C", "Unix", "Shell"],
-    image: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?q=80&auto=format&fit=crop",
+    images: ["/projects/minishell.webp"],
+    details: [
+      "Re-création from scratch d'un shell type GNU bash interactif.",
+      "Gestion complète de l'environnement, des variables locales, des redirections (pipes, >, <, >>, <<).",
+      "Implémentation des builtins clés (echo, cd, pwd, export, unset, env, exit).",
+      "Parsing complexe avec prise en charge des quotes simples/doubles."
+    ]
   },
   {
     title: "Cub3D",
     desc: "Développement d'un moteur de jeu type Raycasting en C (en cours de développement).",
     tech: ["C", "Algorithmique", "Rendu"],
-    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&auto=format&fit=crop",
+    images: ["/projects/cub3D.webp"],
+    details: [
+      "Création d'un système de rendu 3D basé sur la technique historique du Raycasting (façon Wolfenstein 3D).",
+      "Calcul des intersections de rayons sur une grille 2D pour générer des perspectives.",
+      "Gestion des textures, des déplacements caméra (translation, rotation avec souris/clavier), et des collisions avec les murs."
+    ]
   },
   {
     title: "FdF",
     desc: "Programme de rendu 3D isométrique en fil de fer.",
     tech: ["C", "Mathématiques"],
-    image: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&auto=format&fit=crop",
+    images: ["/projects/fdf100-6.webp", "/projects/fdfmars.webp", "/projects/fdft2.webp"],
+    details: [
+      "Représentation graphique fil de fer (wireframe) d'un paysage ou d'une carte topographique fournie sous forme de coordonnées X,Y,Z.",
+      "Implémentation des algorithmes de tracé de segment de Bresenham.",
+      "Calcul matriciel pour convertir un espace 3D en une projection isométrique 2D sur l'écran."
+    ]
   },
   {
     title: "Helios Energies",
     desc: "Site vitrine. Intégration et adaptation d'un template web pour les besoins d'un client réel.",
     tech: ["Web", "Déploiement"],
-    image: "https://images.unsplash.com/photo-1618477247222-ac60c2800bf9?q=80&auto=format&fit=crop",
+    images: ["/projects/helios.webp"],
+    details: [
+      "Adaptation visuelle et structurelle d'un modèle pour répondre à l'identité d'une entreprise du secteur des énergies.",
+      "Optimisation des performances avec des assets responsives et du lazy loading.",
+      "Déploiement en ligne et configuration du domaine, permettant au client de gagner en visibilité numérique."
+    ]
   },
   {
     title: "Distributeur IoT",
     desc: "Conception 3D, assemblage électronique et programmation d'un distributeur de croquettes domotisé.",
     tech: ["IoT", "Impression 3D", "Électronique"],
-    image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&auto=format&fit=crop",
+    images: ["/projects/distributeur.webp"],
+    details: [
+      "Modélisation complète des pièces sur un logiciel CAO (Fusion 360) et fabrication en impression 3D.",
+      "Soudure et câblage des composants embarqués (microcontrôleur, servomoteur, capteurs).",
+      "Écriture d'un programme en C/C++ pour l'orchestration, permettant des déclenchements programmés et une intégration réseau éventuelle."
+    ]
   },
   {
     title: "Serveur Homelab",
     desc: "Mise en place d'un serveur personnel (Portainer, HomeAssistant, VaultWarden, Nextcloud...) pour l'auto-hébergement et la souveraineté des données.",
     tech: ["Docker", "Admin Sys", "Réseau"],
-    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&auto=format&fit=crop",
+    images: ["/projects/homelab.webp"],
+    details: [
+      "Configuration complète d'un serveur à domicile depuis un OS vierge (Linux).",
+      "Utilisation avancée de Docker / Docker Compose et administration via Portainer pour isoler les conteneurs hébergés.",
+      "Gestion de proxy inversé (Traefik / Nginx), d'un dashboard unifié, et maintien opérationnel des certificats SSL/TLS."
+    ]
   },
   {
     title: "Imprimante 3D Custom",
     desc: "Assemblage, câblage et configuration complète d'une imprimante 3D sur mesure.",
     tech: ["Hardware", "Marlin"],
-    image: "https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?q=80&auto=format&fit=crop",
+    images: ["/projects/imprimante3D.webp", "/projects/imprimante3D_2.webp"],
+    details: [
+      "Choix et montage du profilé aluminium, de la cinématique (courroies, tiges filetées) et des moteurs pas-à-pas.",
+      "Câblage sécurisé de l'alimentation, de la carte mère, et de l'extrusion (hotend).",
+      "Configuration, compilation et flashage du firmware open-source Marlin. Calibration fine (steps/mm, PID tuning)."
+    ]
   },
   {
     title: "IA & Python",
     desc: "Développement d'un script d'entraînement de modèle d'intelligence artificielle réalisé en stage.",
     tech: ["Python", "Machine Learning"],
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&auto=format&fit=crop",
+    images: ["/projects/luxscan.webp"],
+    details: [
+      "Pipeline de traitement d'images automatisé (nettoyage, normalisation, annotation des défauts sur des surfaces boisées).",
+      "Entraînement d'un modèle neuronal pour la segmentation ou détection de caractéristiques sur les planches.",
+      "Amélioration de la fiabilité via des méthodes d'augmentation de données et analyse des résultats post-entraînement."
+    ]
   }
 ];
 
-// --- FOND AMBIANT VIVANT (Style Aura / Nébuleuse) ---
 const ContinuousBackground = () => (
   <div className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none">
-    {/* Orbe Cyan - Mouvement de respiration lent */}
+    {}
     <motion.div 
       style={{ willChange: "transform" }}
       animate={{ 
@@ -105,7 +142,7 @@ const ContinuousBackground = () => (
       className="absolute top-[-5%] md:top-[-20%] left-[-10%] md:left-[10%] w-[100vw] md:w-[50vw] h-[100vw] md:h-[50vw] bg-accent/30 md:bg-accent/20 blur-[80px] md:blur-[100px] mix-blend-screen opacity-50 md:opacity-50" 
     />
     
-    {/* Orbe Bleu - Mouvement asynchrone */}
+    {}
     <motion.div 
       style={{ willChange: "transform" }}
       animate={{ 
@@ -127,14 +164,13 @@ const TypewriterText = ({ texts }: { texts: string[] }) => {
   useEffect(() => {
     if (textIndex >= texts.length) return;
     
-    // Si on a fini la ligne actuelle, ou passe à la suivante après un délai
     if (charIndex >= texts[textIndex].length) {
       if (textIndex < texts.length - 1) {
         const timeout = setTimeout(() => {
           setDisplayedText(prev => prev + "\n");
           setTextIndex(textIndex + 1);
           setCharIndex(0);
-        }, 500); // Pause entre les lignes
+        }, 500);
         return () => clearTimeout(timeout);
       }
       return;
@@ -143,7 +179,7 @@ const TypewriterText = ({ texts }: { texts: string[] }) => {
     const timeout = setTimeout(() => {
       setDisplayedText(prev => prev + texts[textIndex][charIndex]);
       setCharIndex(charIndex + 1);
-    }, 40); // Vitesse de frappe
+    }, 40);
 
     return () => clearTimeout(timeout);
   }, [charIndex, textIndex, texts]);
@@ -156,7 +192,6 @@ const TypewriterText = ({ texts }: { texts: string[] }) => {
   );
 };
 
-// --- HERO SECTION ---
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
   const [isDesktop, setIsDesktop] = useState(true);
@@ -170,24 +205,23 @@ const HeroSection = () => {
 
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
   
-  // La section recule légèrement (moins violent que 0.9)
   const stickyScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
   const scale = isDesktop ? stickyScale : 1;
 
-  // Au lieu de jouer sur l'opacité ou les bords ronds, on crée une ombre qui s'épaissit
-  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const overlayOpacityRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const yTextRaw = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   
-  // Parallaxe interne du texte
-  const yText = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const overlayOpacity = isDesktop ? overlayOpacityRaw : 0;
+  const yText = isDesktop ? yTextRaw : "0%";
 
   return (
     <motion.section 
       ref={containerRef}
       style={{ scale, transformOrigin: 'top center', zIndex: 5 }} 
-      // min-h-[100svh] permet au contenu de s'adapter si la barre d'URL change
-      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-24 md:py-0 w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
+
+      className="relative md:sticky top-0 min-h-[85vh] md:h-screen py-24 md:py-0 w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
     >
-      {/* Ombre d'assombrissement organique (plus foncée en bas qu'en haut) */}
+      {}
       <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-20 pointer-events-none" />
       <motion.div style={{ y: yText }} className="relative z-10 w-full max-w-5xl text-center flex flex-col items-center">
         <p className="text-zinc-500 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase mb-6 md:mb-8">
@@ -200,7 +234,7 @@ const HeroSection = () => {
         <p className="text-base md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-10 md:mb-12 font-light leading-relaxed px-4 h-24">
           <TypewriterText 
             texts={[
-              "Développeur Logiciel.\nModélisateur 3D.\nMaker IoT." // Ajout de retours à la ligne pour le mobile
+              "Développeur Logiciel.\nModélisateur 3D.\nMaker IoT."
             ]} 
           />
         </p>
@@ -212,42 +246,42 @@ const HeroSection = () => {
   );
 };
 
-// --- COMPOSANT PROJET : LE VRAI STACKING CARD EFFECT REFINÉ ---
 const ProjectCard = ({ project, index }: { project: typeof projects[0], index: number }) => {
   const containerRef = useRef<HTMLElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (!project.images || project.images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % project.images.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [project.images]);
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
-    handleResize(); // Check initial
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
   
-  // Cette animation se déclenche UNIQUEMENT quand la carte est fixée en haut et que la SUIVANTE commence à glisser dessus.
-  // start start: Le haut de CETTE carte touche le haut de l'écran.
-  // end start: Le bas de CETTE carte (qui fait 100vh de base) touche le haut de l'écran (soit 100vh de scroll plus tard).
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
   const stickyScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
   
-  // Au lieu d'avoir un "overlay noir" qui s'ajoute pardessus (1 calque plein écran en + par projet)
-  // On va simplement baisser l'opacité du CONTENU pour qu'il se fonde dans le fond noir naturel de la carte !
   const stickyOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2]);
 
-  // Si on est sur mobile, les cartes ne sont plus "sticky" mais "relative" et défilent normalement de façon fluide.
-  // Par conséquent, on n'applique l'effet de Scale et d'Opacité dynamiques QU'EN TANT QUE "DESKTOP" 
-  // sinon, on aurait un espace vide causé par le rétrécissement naturel de la div sans qu'il ne soit comblé.
   const scale = isDesktop ? stickyScale : 1;
   const contentOpacity = isDesktop ? stickyOpacity : 1;
 
-  // Mouvement du halo : on veut l'animer PENDANT que la carte atterrit (glisse du bas de l'écran jusqu'en haut)
   const { scrollYProgress: slideProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "start start"]
   });
-  // Le halo balaye de droite vers la gauche exactement pendant l'apparition fluide de la carte
-  const leftHalo = useTransform(slideProgress, [0, 1], ["100%", "-100%"]);
+
+  const leftHaloRaw = useTransform(slideProgress, [0, 1], ["100%", "-100%"]);
+  const leftHalo = isDesktop ? leftHaloRaw : "-100%";
   
   const isEven = index % 2 === 0;
 
@@ -258,26 +292,26 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
       style={{ 
         scale, 
         transformOrigin: 'top center', 
-        zIndex: 10 + index, // Indispensable
+        zIndex: 10 + index,
       }} 
-      // min-h-[100svh] permet de ne pas contraindre rigidement la carte sur un mobile
-      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-24 md:py-0 w-full flex items-center justify-center px-4 md:px-12 xl:px-24 bg-[#050505] border-t-0 md:border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] overflow-hidden"
+
+      className="relative md:sticky top-0 h-auto md:h-screen py-16 md:py-0 w-full flex items-center justify-center px-4 md:px-12 xl:px-24 bg-[#050505] border-t-0 md:border-t border-white/5 overflow-hidden"
     >
-      {/* Halo lumineux qui voyage de façon autonome et propre à cette carte */}
+      {}
       <motion.div 
         style={{ left: leftHalo }}
         className="absolute top-0 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-20" 
       />
       
-      {/* L'ancien overlay noir géant a été SUPPRIMÉ pour économiser 8 couches de rendu GPU simultanées */}
+      {}
       
-      {/* ENVELOPPE GLOBALE DU CONTENU (Gère le fondu d'assombrissement) */}
+      {}
       <motion.div 
         style={{ opacity: contentOpacity }}
         className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} gap-8 md:gap-12 lg:gap-24 w-full max-w-screen-2xl items-center relative z-10 py-12 lg:py-0`}
       >
           
-          {/* TEXTES - Typographie très aérée et raffinée (Apple style) */}
+          {}
           <div className="w-full lg:w-5/12 flex flex-col justify-center order-2 lg:order-none mt-8 lg:mt-0">
             <div className="text-zinc-600 font-mono text-xs md:text-sm tracking-widest uppercase mb-4 md:mb-6 flex items-center gap-4">
                <span className="w-6 md:w-8 h-[1px] bg-zinc-800" /> PROJET 0{index + 1}
@@ -303,32 +337,65 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
             </div>
           </div>
 
-          {/* IMAGE - 3D FLIP CONTAINER */}
-          <div className="w-full lg:w-7/12 h-[40svh] md:h-[45vh] lg:h-[70vh] relative flex items-center justify-center order-1 lg:order-none" style={{ perspective: "2000px" }}>
+          {}
+          <div className="w-full lg:w-7/12 relative flex items-center justify-center order-1 lg:order-none" style={{ perspective: "2000px" }}>
             <motion.div 
-              className="w-full h-full relative"
+              className="relative w-fit max-w-full flex items-center justify-center"
               style={{ transformStyle: "preserve-3d" }}
               animate={{ rotateY: isFlipped ? 180 : 0 }}
               transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
             >
-              {/* FRONT: IMAGE */}
+              {}
               <div 
-                className="absolute inset-0 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-zinc-900 pointer-events-auto"
+                className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black pointer-events-auto"
                 style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
               >
-                {/* Plus de Parallax (yImage) ni de <motion.img> : L'image est allégée. Sur un effet de scroll stacking, le GPU ne peut pas calculer 8 parallax imbriqués dans de la 3D */}
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  loading="lazy"
-                  decoding="async"
-                  className="absolute inset-0 w-full h-full object-cover object-center scale-110 opacity-80 hover:opacity-100 transition-all duration-700 hover:scale-105"
-                />
+                <div className="grid items-center justify-items-center">
+                  {project.images.map((imgUrl, i) => {
+                    const isActive = i === currentImageIndex;
+
+                    return (
+                      <div 
+                        key={i} 
+                        className={`col-start-1 row-start-1 flex items-center justify-center transition-opacity duration-1000 ease-in-out ${
+                          isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+                        }`}
+                      >
+                        <img 
+                          src={imgUrl} 
+                          alt={`${project.title} - vue ${i + 1}`}
+                          className="w-auto h-auto max-w-full max-h-[300px] md:max-h-[60vh] lg:max-h-[75vh] rounded-2xl md:rounded-3xl block transition-transform duration-700 ease-out hover:scale-[1.02]"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {}
+                {project.images.length > 1 && (
+                  <div className="absolute bottom-6 left-0 right-0 z-20 flex justify-center gap-3">
+                    {project.images.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentImageIndex(i);
+                        }}
+                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                          i === currentImageIndex 
+                            ? "bg-white scale-125 shadow-[0_0_10px_rgba(255,255,255,0.7)]" 
+                            : "bg-white/40 hover:bg-white/70"
+                        }`}
+                        aria-label={`Go to slide ${i + 1}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* BACK: DETAILS */}
+              {}
               <div 
-                className="absolute inset-0 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0a] flex flex-col p-6 md:p-12"
+                className="absolute inset-0 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0a] flex flex-col p-6 md:p-12 pointer-events-auto"
                 style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg) translateZ(0)" }}
               >
                 <button 
@@ -343,21 +410,19 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
                   Notes Techniques
                 </h3>
                 
-                <div className="flex-1 overflow-y-auto pr-2 md:pr-4 space-y-4 md:space-y-6 text-zinc-400 font-mono text-xs md:text-sm leading-relaxed custom-scrollbar relative z-40" onClick={e => e.stopPropagation()}>
-                  <p className="text-zinc-300 font-sans text-base">
-                    // TODO: Implémenter les détails spécifiques pour {project.title}
-                  </p>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                  </p>
-                  <p>
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  </p>
-                  <p>
-                    Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris.
-                  </p>
-                  <div className="p-4 bg-black/50 border border-white/5 rounded-lg mt-4">
-                    <span className="text-accent">console.log</span>("Architecture scalable déployée avec succès.");
+                <div 
+                  className="flex-1 pr-2 md:pr-4 space-y-4 md:space-y-6 text-zinc-400 font-mono text-xs md:text-sm leading-relaxed relative z-40" 
+                  onClick={e => e.stopPropagation()}
+                >
+                  {project.details.map((detail, idx) => (
+                    <p key={idx} className="flex gap-3">
+                      <span className="text-accent/60">{'//'}</span>
+                      <span className="text-zinc-300">{detail}</span>
+                    </p>
+                  ))}
+                  
+                  <div className="p-4 bg-black/50 border border-white/5 rounded-lg mt-8 inline-block w-full">
+                    <span className="text-zinc-500">[{project.tech.join("] - [")}]</span>
                   </div>
                 </div>
               </div>
@@ -369,32 +434,81 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
   );
 };
 
-// --- FOOTER MASSIF ---
+const skills = [
+  "Fusion 360", "Adobe Premiere Pro", "Photoshop", "DaVinci Resolve",
+  "Marlin", "IoT", "Électronique", "Docker", "Linux", "Git", "GitHub", "Portainer",
+  "C", "C++", "Python", "Bash", "HTML", "CSS", "PHP", "TypeScript"
+];
+
+const SkillsSection = () => {
+  return (
+    <section id="competences" className="relative w-full py-24 md:py-32 bg-[#050505] border-t border-white/5 z-50 flex flex-col items-center justify-center overflow-hidden">
+      <div className="w-full flex flex-col items-center">
+        
+        <h2 className="text-zinc-600 font-mono text-xs md:text-sm tracking-widest uppercase mb-16 flex items-center gap-4 px-6 text-center">
+          <span className="hidden md:block w-8 h-[1px] bg-zinc-800" /> COMPÉTENCES & OUTILS <span className="hidden md:block w-8 h-[1px] bg-zinc-800" />
+        </h2>
+
+        {}
+        <div className="w-full relative flex overflow-hidden mb-8 group [-webkit-mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+          <motion.div 
+            className="flex whitespace-nowrap w-max"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ ease: "linear", duration: 45, repeat: Infinity }}
+          >
+            {}
+            {[1, 2].map((set) => (
+              <div key={set} className="flex gap-8 md:gap-16 px-4 md:px-8 items-center">
+                {skills.map((skill, index) => (
+                  <span key={index} className="text-4xl md:text-6xl font-medium tracking-tighter text-zinc-800 uppercase hover:text-white transition-colors duration-300">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </motion.div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
 const FooterSection = () => {
   const containerRef = useRef<HTMLElement>(null);
-  
-  // Le même schéma de halo pour le footer
-  const { scrollYProgress: slideProgress } = useScroll({ target: containerRef, offset: ["start end", "start start"] });
-  const leftHalo = useTransform(slideProgress, [0, 1], ["100%", "-100%"]);
+  const [isDesktop, setIsDesktop] = useState(true);
 
-  // Apparition du contenu en douceur (Parallaxe vers le haut)
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
+  const { scrollYProgress: slideProgress } = useScroll({ target: containerRef, offset: ["start end", "start start"] });
+  const leftHaloRaw = useTransform(slideProgress, [0, 1], ["100%", "-100%"]);
+  const leftHalo = isDesktop ? leftHaloRaw : "-100%";
+
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start 80%", "end end"] });
-  const yContent = useTransform(scrollYProgress, [0, 1], ["20%", "0%"]);
-  const opacityContent = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const yContentRaw = useTransform(scrollYProgress, [0, 1], ["20%", "0%"]);
+  const opacityContentRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
+  const yContent = isDesktop ? yContentRaw : "0%";
+  const opacityContent = isDesktop ? opacityContentRaw : 1;
 
   return (
     <motion.footer 
       ref={containerRef}
       id="contact"
-      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-24 md:py-0 w-full bg-[#050505] border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center px-6 z-[100] overflow-hidden"
+      className="relative md:sticky top-0 h-auto md:h-screen py-16 md:py-0 w-full bg-[#050505] border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center px-6 z-[100] overflow-hidden"
     >
-      {/* Halo lumineux qui voyage */}
+      {}
       <motion.div 
         style={{ left: leftHalo }}
         className="absolute top-0 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-20" 
       />
       
-      {/* Éclairage directionnel dramatique venant du haut */}
+      {}
       <div className="absolute top-0 inset-x-0 mx-auto w-full h-[40svh] md:h-[40vh] bg-gradient-to-b from-accent/10 to-transparent pointer-events-none" />
 
       <motion.div 
@@ -405,13 +519,13 @@ const FooterSection = () => {
           Contactez-moi.
         </h2>
         <div className="flex flex-wrap justify-center gap-4 mb-20 w-full">
-          <MagneticButton href="mailto:contact@example.com" className="!bg-black border border-white/10 hover:!border-accent/40 !text-white hover:!text-accent !p-4 transition-colors">
+          <MagneticButton href="mailto:hugo.burton6@gmail.com" className="!bg-black border border-white/10 hover:!border-accent/40 !text-white hover:!text-accent !p-4 transition-colors">
             <Mail className="w-6 h-6" />
           </MagneticButton>
-          <MagneticButton href="https://linkedin.com" className="!bg-black border border-white/10 hover:!border-accent/40 !text-white hover:!text-accent !p-4 transition-colors">
+          <MagneticButton href="https://www.linkedin.com/in/hugo-burton-007591232/" className="!bg-black border border-white/10 hover:!border-accent/40 !text-white hover:!text-accent !p-4 transition-colors">
             <Linkedin className="w-6 h-6" />
           </MagneticButton>
-          <MagneticButton href="https://github.com" className="!bg-black border border-white/10 hover:!border-accent/40 !text-white hover:!text-accent !p-4 transition-colors">
+          <MagneticButton href="https://github.com/thaygoo?tab=repositories" className="!bg-black border border-white/10 hover:!border-accent/40 !text-white hover:!text-accent !p-4 transition-colors">
             <Github className="w-6 h-6" />
           </MagneticButton>
         </div>
@@ -424,10 +538,9 @@ const FooterSection = () => {
   );
 }
 
-// --- PRELOADER (Style 3 Boules Modernes & Rapide) ---
 const Preloader = ({ onComplete }: { onComplete: () => void }) => {
   useEffect(() => {
-    // Faux chargement extrêmement court (1 seconde)
+
     document.body.style.overflow = "hidden";
     const timer = setTimeout(() => {
       document.body.style.overflow = "";
@@ -439,7 +552,7 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
 
   return (
     <motion.div
-      // Fondu de sortie (le fond transparent permettait de voir ContinuousBackground, on met bg-transparent pour garder le monde visible)
+
       exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="fixed inset-0 z-[9999] bg-transparent flex flex-col items-center justify-center pointer-events-none"
@@ -467,7 +580,6 @@ const Preloader = ({ onComplete }: { onComplete: () => void }) => {
   );
 };
 
-// --- SIDE NAVIGATION MODERNE ---
 const SideNav = ({ projectsCount }: { projectsCount: number }) => {
   const [activeIndex, setActiveIndex] = useState(-1);
 
@@ -475,7 +587,7 @@ const SideNav = ({ projectsCount }: { projectsCount: number }) => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const vh = window.innerHeight;
-      // On calcule l'index basé sur le scroll. Le HeroSection fait 1vh. Chaque projet fait 1vh.
+
       const newIndex = Math.floor((scrollY - vh * 0.5) / vh);
       
       if (newIndex < 0) setActiveIndex(-1);
@@ -505,17 +617,14 @@ const SideNav = ({ projectsCount }: { projectsCount: number }) => {
   );
 };
 
-// --- MAIN LAYOUT : CLEAN & LISSE ---
 export default function Portfolio() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Si on est sur mobile, on laisse le navigateur gérer 100% du scroll nativement !
-    // Cela évite tous les sauts et désynchronisations liés à l'apparition/disparition de la barre d'adresse
+
     const isMobile = window.innerWidth < 768;
     if (isMobile) return;
 
-    // Scroll Lenis ultra adouci (lerp à 0.08) pour une sensation luxueuse sur Desktop
     const lenis = new Lenis({
       lerp: 0.08, 
       smoothWheel: true,
@@ -523,7 +632,6 @@ export default function Portfolio() {
     function raf(time: number) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
     
-    // Intercepter les liens d'ancre pour un smooth scroll avec Lenis
     const handleAnchorClick = (e: Event) => {
       const target = e.currentTarget as HTMLAnchorElement;
       const hash = target.getAttribute('href');
@@ -535,7 +643,6 @@ export default function Portfolio() {
     const anchors = document.querySelectorAll('a[href^="#"]');
     anchors.forEach(a => a.addEventListener('click', handleAnchorClick));
 
-    // Si on a l'attribut spécial pour scroller en haut
     const handleTopClick = (e: Event) => {
       e.preventDefault();
       lenis.scrollTo(0, { duration: 2 });
@@ -548,14 +655,11 @@ export default function Portfolio() {
       topAnchors.forEach(a => a.removeEventListener('click', handleTopClick));
       lenis.destroy();
     };
-  }, [isLoading]); // Ajout de isLoading en dépendance pour que Lenis se re-bind au DOM quand il a fini de charger
+  }, [isLoading]);
 
   return (
     <div className="text-white font-sans selection:bg-accent selection:text-black min-h-screen relative">
-      {/* 
-        Si on veut que l'aura/dégradé apparaisse EN MÊME TEMPS que le reste et pas avant,
-        on le conditionne aussi avec !isLoading
-      */}
+      {}
       {!isLoading && (
         <motion.div
            initial={{ opacity: 0 }}
@@ -573,18 +677,19 @@ export default function Portfolio() {
         )}
       </AnimatePresence>
 
-      {/* NAVBAR MINIMALISTE (Sortie du fade global pour éviter le saut 3D/Scale de Framer Motion) */}
+      {}
       {!isLoading && (
         <>
           <SideNav projectsCount={projects.length} />
-          {/* Glassmorphism sur Mobile pour la lisibilité / Transparence pure + Mix-blend sur PC */}
+          {}
           <header className="fixed top-0 left-0 right-0 z-[200] flex items-center justify-between p-4 md:p-6 mb-4 bg-[#050505]/70 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-b border-white/10 md:border-none mix-blend-normal md:mix-blend-difference pointer-events-none animate-[fadeIn_1s_ease-out]">
             <a href="#top" className="flex items-center gap-2 font-bold tracking-tighter text-lg pointer-events-auto">
               <Terminal className="w-5 h-5 text-accent" />
               <span>HB.</span>
             </a>
-            <nav className="flex items-center gap-6 font-medium text-xs tracking-widest uppercase pointer-events-auto text-zinc-400">
+            <nav className="flex items-center gap-4 md:gap-6 font-medium text-xs tracking-widest uppercase pointer-events-auto text-zinc-400">
               <a href="#projets-start" className="hidden md:block hover:text-white transition-colors">Travaux</a>
+              <a href="#competences" className="hidden md:block hover:text-white transition-colors">Compétences</a>
               <a href="#contact" className="hover:text-white transition-colors">Contact</a>
             </nav>
           </header>
@@ -599,7 +704,7 @@ export default function Portfolio() {
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="relative z-10"
         >
-          {/* STRUCTURE DU DECK DE CARTES */}
+          {}
           <div className="relative w-full">
             <HeroSection />
             <div id="projets-start" className="absolute top-[100svh]" />
@@ -607,6 +712,8 @@ export default function Portfolio() {
               <div key={`anchor-${i}`} id={`projet-anchor-${i}`} className="absolute w-full h-[1px] pointer-events-none" style={{ top: `calc(${(i + 1)} * 100svh)` }} />
             ))}
             {projects.map((proj, i) => <ProjectCard key={i} project={proj} index={i} />)}
+            
+            <SkillsSection />
             <FooterSection />
           </div>
         </motion.div>
