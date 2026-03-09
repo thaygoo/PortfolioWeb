@@ -95,6 +95,7 @@ const ContinuousBackground = () => (
   <div className="fixed inset-0 z-0 bg-black overflow-hidden pointer-events-none">
     {/* Orbe Cyan - Mouvement de respiration lent */}
     <motion.div 
+      style={{ willChange: "transform" }}
       animate={{ 
         x: ["0%", "5%", "0%"], 
         y: ["0%", "8%", "0%"],
@@ -106,6 +107,7 @@ const ContinuousBackground = () => (
     
     {/* Orbe Bleu - Mouvement asynchrone */}
     <motion.div 
+      style={{ willChange: "transform" }}
       animate={{ 
         x: ["0%", "-5%", "0%"], 
         y: ["0%", "-5%", "0%"],
@@ -157,10 +159,21 @@ const TypewriterText = ({ texts }: { texts: string[] }) => {
 // --- HERO SECTION ---
 const HeroSection = () => {
   const containerRef = useRef<HTMLElement>(null);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
   
   // La section recule légèrement (moins violent que 0.9)
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  const stickyScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  const scale = isDesktop ? stickyScale : 1;
+
   // Au lieu de jouer sur l'opacité ou les bords ronds, on crée une ombre qui s'épaissit
   const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
   
@@ -171,26 +184,27 @@ const HeroSection = () => {
     <motion.section 
       ref={containerRef}
       style={{ scale, transformOrigin: 'top center', zIndex: 5 }} 
-      className="sticky top-0 h-screen w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
+      // min-h-[100svh] permet au contenu de s'adapter si la barre d'URL change
+      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-24 md:py-0 w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
     >
       {/* Ombre d'assombrissement organique (plus foncée en bas qu'en haut) */}
       <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-20 pointer-events-none" />
       <motion.div style={{ y: yText }} className="relative z-10 w-full max-w-5xl text-center flex flex-col items-center">
-        <p className="text-zinc-500 font-mono text-xs tracking-[0.3em] uppercase mb-8">
+        <p className="text-zinc-500 font-mono text-[10px] md:text-xs tracking-[0.3em] uppercase mb-6 md:mb-8">
           Développeur & Maker
         </p>
-        <h1 className="text-5xl md:text-7xl lg:text-[8.5rem] font-medium tracking-tighter leading-[0.95] mb-8 text-white">
+        <h1 className="text-5xl md:text-7xl lg:text-[8.5rem] font-medium tracking-tighter leading-[0.95] mb-6 md:mb-8 text-white">
           Hugo <br/>
-          <span className="text-accent italic font-light pr-4">Burton.</span>
+          <span className="text-accent italic font-light pr-2 md:pr-4">Burton.</span>
         </h1>
-        <p className="text-lg md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed px-4 h-24">
+        <p className="text-base md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-10 md:mb-12 font-light leading-relaxed px-4 h-24">
           <TypewriterText 
             texts={[
-              "Développeur Logiciel. Modélisateur 3D. Maker IoT."
+              "Développeur Logiciel.\nModélisateur 3D.\nMaker IoT." // Ajout de retours à la ligne pour le mobile
             ]} 
           />
         </p>
-        <MagneticButton href="#projets-start" className="!bg-white !text-black hover:!bg-accent hover:!text-black px-8 py-4">
+        <MagneticButton href="#projets-start" className="!bg-white !text-black hover:!bg-accent hover:!text-black px-6 py-3 md:px-8 md:py-4">
           Voir mes projets <ArrowDown className="w-4 h-4 ml-1" />
         </MagneticButton>
       </motion.div>
@@ -202,14 +216,30 @@ const HeroSection = () => {
 const ProjectCard = ({ project, index }: { project: typeof projects[0], index: number }) => {
   const containerRef = useRef<HTMLElement>(null);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(true);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    handleResize(); // Check initial
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   
   // Cette animation se déclenche UNIQUEMENT quand la carte est fixée en haut et que la SUIVANTE commence à glisser dessus.
   // start start: Le haut de CETTE carte touche le haut de l'écran.
   // end start: Le bas de CETTE carte (qui fait 100vh de base) touche le haut de l'écran (soit 100vh de scroll plus tard).
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end start"] });
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
-  const overlayOpacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const yImage = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const stickyScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
+  
+  // Au lieu d'avoir un "overlay noir" qui s'ajoute pardessus (1 calque plein écran en + par projet)
+  // On va simplement baisser l'opacité du CONTENU pour qu'il se fonde dans le fond noir naturel de la carte !
+  const stickyOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2]);
+
+  // Si on est sur mobile, les cartes ne sont plus "sticky" mais "relative" et défilent normalement de façon fluide.
+  // Par conséquent, on n'applique l'effet de Scale et d'Opacité dynamiques QU'EN TANT QUE "DESKTOP" 
+  // sinon, on aurait un espace vide causé par le rétrécissement naturel de la div sans qu'il ne soit comblé.
+  const scale = isDesktop ? stickyScale : 1;
+  const contentOpacity = isDesktop ? stickyOpacity : 1;
 
   // Mouvement du halo : on veut l'animer PENDANT que la carte atterrit (glisse du bas de l'écran jusqu'en haut)
   const { scrollYProgress: slideProgress } = useScroll({
@@ -228,12 +258,10 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
       style={{ 
         scale, 
         transformOrigin: 'top center', 
-        zIndex: 10 + index, 
-        willChange: "transform",
-        backfaceVisibility: "hidden",
-        WebkitBackfaceVisibility: "hidden",
+        zIndex: 10 + index, // Indispensable
       }} 
-      className="sticky top-0 h-screen w-full flex items-center justify-center px-6 md:px-12 xl:px-24 bg-[#050505] border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] overflow-hidden"
+      // min-h-[100svh] permet de ne pas contraindre rigidement la carte sur un mobile
+      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-24 md:py-0 w-full flex items-center justify-center px-4 md:px-12 xl:px-24 bg-[#050505] border-t-0 md:border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] overflow-hidden"
     >
       {/* Halo lumineux qui voyage de façon autonome et propre à cette carte */}
       <motion.div 
@@ -241,31 +269,34 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
         className="absolute top-0 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-20" 
       />
       
-      {/* Ombre organique pour l'effet de profondeur sans le look "bloc noir". Protège du contenu et masque subtilement. */}
-      <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-30 pointer-events-none" />
+      {/* L'ancien overlay noir géant a été SUPPRIMÉ pour économiser 8 couches de rendu GPU simultanées */}
       
-      <div className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} gap-12 lg:gap-24 w-full max-w-screen-2xl items-center relative z-10`}>
+      {/* ENVELOPPE GLOBALE DU CONTENU (Gère le fondu d'assombrissement) */}
+      <motion.div 
+        style={{ opacity: contentOpacity }}
+        className={`flex flex-col ${isEven ? "lg:flex-row" : "lg:flex-row-reverse"} gap-8 md:gap-12 lg:gap-24 w-full max-w-screen-2xl items-center relative z-10 py-12 lg:py-0`}
+      >
           
           {/* TEXTES - Typographie très aérée et raffinée (Apple style) */}
-          <div className="w-full lg:w-5/12 flex flex-col justify-center order-2 lg:order-none">
-            <div className="text-zinc-600 font-mono text-sm tracking-widest uppercase mb-6 flex items-center gap-4">
-               <span className="w-8 h-[1px] bg-zinc-800" /> PROJET 0{index + 1}
+          <div className="w-full lg:w-5/12 flex flex-col justify-center order-2 lg:order-none mt-8 lg:mt-0">
+            <div className="text-zinc-600 font-mono text-xs md:text-sm tracking-widest uppercase mb-4 md:mb-6 flex items-center gap-4">
+               <span className="w-6 md:w-8 h-[1px] bg-zinc-800" /> PROJET 0{index + 1}
             </div>
-            <h2 className="text-5xl md:text-6xl lg:text-[5rem] font-medium tracking-tighter mb-8 text-white">
+            <h2 className="text-4xl md:text-6xl lg:text-[5rem] font-medium tracking-tighter mb-6 md:mb-8 text-white">
               {project.title}
             </h2>
-            <p className="text-lg md:text-xl text-zinc-400 leading-relaxed font-light mb-10">
+            <p className="text-base md:text-xl text-zinc-400 leading-relaxed font-light mb-8 md:mb-10">
               {project.desc}
             </p>
-            <ul className="flex flex-wrap gap-2 mb-10">
+            <ul className="flex flex-wrap gap-2 mb-8 md:mb-10">
               {project.tech.map((t, i) => (
-                <li key={i} className="px-4 py-2 bg-white/5 border border-white/5 rounded-full text-zinc-300 font-medium text-xs tracking-wide">
+                <li key={i} className="px-3 py-1.5 md:px-4 md:py-2 bg-white/5 border border-white/5 rounded-full text-zinc-300 font-medium text-[10px] md:text-xs tracking-wide">
                   {t}
                 </li>
               ))}
             </ul>
             <div>
-              <MagneticButton onClick={() => setIsFlipped(!isFlipped)} className="!px-6 !py-3 min-w-[200px]">
+              <MagneticButton onClick={() => setIsFlipped(!isFlipped)} className="!px-5 !py-2 md:!px-6 md:!py-3 min-w-[180px] md:min-w-[200px]">
                 {isFlipped ? "Retour" : "Détails techniques"}
                 {isFlipped ? <X className="w-4 h-4 ml-2 opacity-50" /> : <ChevronRight className="w-4 h-4 ml-2 opacity-50" />}
               </MagneticButton>
@@ -273,7 +304,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
           </div>
 
           {/* IMAGE - 3D FLIP CONTAINER */}
-          <div className="w-full lg:w-7/12 h-[45vh] lg:h-[70vh] relative flex items-center justify-center order-1 lg:order-none mt-20 lg:mt-0" style={{ perspective: "2000px" }}>
+          <div className="w-full lg:w-7/12 h-[40svh] md:h-[45vh] lg:h-[70vh] relative flex items-center justify-center order-1 lg:order-none" style={{ perspective: "2000px" }}>
             <motion.div 
               className="w-full h-full relative"
               style={{ transformStyle: "preserve-3d" }}
@@ -282,38 +313,37 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
             >
               {/* FRONT: IMAGE */}
               <div 
-                className="absolute inset-0 rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-zinc-900 pointer-events-auto"
-                style={{ backfaceVisibility: "hidden" }}
+                className="absolute inset-0 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-zinc-900 pointer-events-auto"
+                style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
               >
-                {/* loading="lazy" et decoding="async" pour d'énormes gains de performance */}
-                <motion.img 
-                  style={{ y: yImage, scale: 1.15 }}
+                {/* Plus de Parallax (yImage) ni de <motion.img> : L'image est allégée. Sur un effet de scroll stacking, le GPU ne peut pas calculer 8 parallax imbriqués dans de la 3D */}
+                <img 
                   src={project.image} 
                   alt={project.title}
                   loading="lazy"
                   decoding="async"
-                  className="absolute inset-0 w-full h-[120%] object-cover object-center opacity-80 hover:opacity-100 transition-opacity duration-700"
+                  className="absolute inset-0 w-full h-full object-cover object-center scale-110 opacity-80 hover:opacity-100 transition-all duration-700 hover:scale-105"
                 />
               </div>
 
               {/* BACK: DETAILS */}
               <div 
-                className="absolute inset-0 rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0a] flex flex-col p-8 md:p-12"
-                style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+                className="absolute inset-0 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-[#0a0a0a] flex flex-col p-6 md:p-12"
+                style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "rotateY(180deg) translateZ(0)" }}
               >
                 <button 
                   onClick={() => setIsFlipped(false)} 
-                  className="absolute top-6 right-6 p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors z-50 text-zinc-400 hover:text-white"
+                  className="absolute top-4 right-4 md:top-6 md:right-6 p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors z-50 text-zinc-400 hover:text-white"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5 md:w-6 md:h-6" />
                 </button>
                 
-                <h3 className="text-3xl font-medium tracking-tighter mb-8 text-white flex items-center gap-4">
-                  <Terminal className="w-6 h-6 text-accent" />
+                <h3 className="text-2xl md:text-3xl font-medium tracking-tighter mb-4 md:mb-8 text-white flex items-center gap-3">
+                  <Terminal className="w-5 h-5 md:w-6 md:h-6 text-accent" />
                   Notes Techniques
                 </h3>
                 
-                <div className="flex-1 overflow-y-auto pr-4 space-y-6 text-zinc-400 font-mono text-sm leading-relaxed custom-scrollbar relative z-40" onClick={e => e.stopPropagation()}>
+                <div className="flex-1 overflow-y-auto pr-2 md:pr-4 space-y-4 md:space-y-6 text-zinc-400 font-mono text-xs md:text-sm leading-relaxed custom-scrollbar relative z-40" onClick={e => e.stopPropagation()}>
                   <p className="text-zinc-300 font-sans text-base">
                     // TODO: Implémenter les détails spécifiques pour {project.title}
                   </p>
@@ -334,7 +364,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
             </motion.div>
           </div>
 
-        </div>
+        </motion.div>
       </motion.section>
   );
 };
@@ -354,9 +384,9 @@ const FooterSection = () => {
 
   return (
     <motion.footer 
-      ref={containerRef} 
-      id="contact" 
-      className="sticky top-0 h-screen w-full bg-[#050505] border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center px-6 z-[100] overflow-hidden"
+      ref={containerRef}
+      id="contact"
+      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-24 md:py-0 w-full bg-[#050505] border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center px-6 z-[100] overflow-hidden"
     >
       {/* Halo lumineux qui voyage */}
       <motion.div 
@@ -365,7 +395,7 @@ const FooterSection = () => {
       />
       
       {/* Éclairage directionnel dramatique venant du haut */}
-      <div className="absolute top-0 inset-x-0 mx-auto w-full h-[40vh] bg-gradient-to-b from-accent/10 to-transparent pointer-events-none" />
+      <div className="absolute top-0 inset-x-0 mx-auto w-full h-[40svh] md:h-[40vh] bg-gradient-to-b from-accent/10 to-transparent pointer-events-none" />
 
       <motion.div 
         style={{ y: yContent, opacity: opacityContent }}
@@ -480,7 +510,12 @@ export default function Portfolio() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Scroll Lenis ultra adouci (lerp à 0.08) pour une sensation luxueuse
+    // Si on est sur mobile, on laisse le navigateur gérer 100% du scroll nativement !
+    // Cela évite tous les sauts et désynchronisations liés à l'apparition/disparition de la barre d'adresse
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) return;
+
+    // Scroll Lenis ultra adouci (lerp à 0.08) pour une sensation luxueuse sur Desktop
     const lenis = new Lenis({
       lerp: 0.08, 
       smoothWheel: true,
@@ -542,7 +577,8 @@ export default function Portfolio() {
       {!isLoading && (
         <>
           <SideNav projectsCount={projects.length} />
-          <header className="fixed top-0 left-0 right-0 z-[200] flex items-center justify-between p-6 mix-blend-difference pointer-events-none animate-[fadeIn_1s_ease-out]">
+          {/* Glassmorphism sur Mobile pour la lisibilité / Transparence pure + Mix-blend sur PC */}
+          <header className="fixed top-0 left-0 right-0 z-[200] flex items-center justify-between p-4 md:p-6 mb-4 bg-[#050505]/70 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-b border-white/10 md:border-none mix-blend-normal md:mix-blend-difference pointer-events-none animate-[fadeIn_1s_ease-out]">
             <a href="#top" className="flex items-center gap-2 font-bold tracking-tighter text-lg pointer-events-auto">
               <Terminal className="w-5 h-5 text-accent" />
               <span>HB.</span>
@@ -566,9 +602,9 @@ export default function Portfolio() {
           {/* STRUCTURE DU DECK DE CARTES */}
           <div className="relative w-full">
             <HeroSection />
-            <div id="projets-start" className="absolute top-[100vh]" />
+            <div id="projets-start" className="absolute top-[100svh]" />
             {projects.map((_, i) => (
-              <div key={`anchor-${i}`} id={`projet-anchor-${i}`} className="absolute w-full h-[1px] pointer-events-none" style={{ top: `${(i + 1) * 100}vh` }} />
+              <div key={`anchor-${i}`} id={`projet-anchor-${i}`} className="absolute w-full h-[1px] pointer-events-none" style={{ top: `calc(${(i + 1)} * 100svh)` }} />
             ))}
             {projects.map((proj, i) => <ProjectCard key={i} project={proj} index={i} />)}
             <FooterSection />

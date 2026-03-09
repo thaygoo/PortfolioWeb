@@ -6,6 +6,10 @@
   --color-accent: #00f0ff;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
