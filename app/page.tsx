@@ -219,7 +219,7 @@ const HeroSection = () => {
       ref={containerRef}
       style={{ scale, transformOrigin: 'top center', zIndex: 5 }} 
 
-      className="relative md:sticky top-0 min-h-[85vh] md:h-screen py-24 md:py-0 w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
+      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-24 md:py-0 w-full flex items-center justify-center px-6 md:px-12 bg-transparent overflow-hidden"
     >
       {}
       <motion.div style={{ opacity: overlayOpacity }} className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-20 pointer-events-none" />
@@ -347,24 +347,24 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
             >
               {}
               <div 
-                className="relative rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black pointer-events-auto"
+                className="relative min-w-[85vw] md:min-w-0 rounded-2xl md:rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black pointer-events-auto"
                 style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden", transform: "translateZ(0)" }}
               >
-                <div className="grid items-center justify-items-center">
+                <div className="grid items-center justify-items-center w-full h-full">
                   {project.images.map((imgUrl, i) => {
                     const isActive = i === currentImageIndex;
 
                     return (
                       <div 
                         key={i} 
-                        className={`col-start-1 row-start-1 flex items-center justify-center transition-opacity duration-1000 ease-in-out ${
+                        className={`col-start-1 row-start-1 flex items-center justify-center transition-opacity duration-1000 ease-in-out w-full h-full ${
                           isActive ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
                         }`}
                       >
                         <img 
                           src={imgUrl} 
                           alt={`${project.title} - vue ${i + 1}`}
-                          className="w-auto h-auto max-w-full max-h-[300px] md:max-h-[60vh] lg:max-h-[75vh] rounded-2xl md:rounded-3xl block transition-transform duration-700 ease-out hover:scale-[1.02]"
+                          className="w-auto h-auto max-w-full max-h-[400px] md:max-h-[60vh] lg:max-h-[75vh] rounded-2xl md:rounded-3xl block transition-transform duration-700 ease-out hover:scale-[1.02]"
                         />
                       </div>
                     );
@@ -411,7 +411,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
                 </h3>
                 
                 <div 
-                  className="flex-1 pr-2 md:pr-4 space-y-4 md:space-y-6 text-zinc-400 font-mono text-xs md:text-sm leading-relaxed relative z-40" 
+                  className="flex-1 pr-2 md:pr-4 space-y-4 md:space-y-6 text-zinc-400 font-mono text-xs md:text-sm leading-relaxed relative z-40 overflow-y-auto md:overflow-y-visible [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full" 
                   onClick={e => e.stopPropagation()}
                 >
                   {project.details.map((detail, idx) => (
@@ -420,10 +420,6 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0], index: n
                       <span className="text-zinc-300">{detail}</span>
                     </p>
                   ))}
-                  
-                  <div className="p-4 bg-black/50 border border-white/5 rounded-lg mt-8 inline-block w-full">
-                    <span className="text-zinc-500">[{project.tech.join("] - [")}]</span>
-                  </div>
                 </div>
               </div>
             </motion.div>
@@ -500,7 +496,7 @@ const FooterSection = () => {
     <motion.footer 
       ref={containerRef}
       id="contact"
-      className="relative md:sticky top-0 h-auto md:h-screen py-16 md:py-0 w-full bg-[#050505] border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center px-6 z-[100] overflow-hidden"
+      className="relative md:sticky top-0 min-h-[100svh] md:h-screen py-16 md:py-0 w-full bg-[#050505] border-t border-white/5 shadow-[0_-20px_40px_rgba(0,0,0,0.6)] flex flex-col items-center justify-center px-6 z-[100] overflow-hidden"
     >
       {}
       <motion.div 

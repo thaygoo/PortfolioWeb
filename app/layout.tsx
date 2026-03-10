@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hugo Burton | Ingénieur Logiciel & Maker IoT",
+  title: "Hugo Burton | Portfolio",
   description: "Portfolio de Hugo Burton. Développeur et Maker passionné par l'ingénierie logicielle (C, Web) et matérielle (IoT, Impression 3D).",
   keywords: ["Hugo Burton", "développeur", "portfolio", "École 42", "IoT", "Next.js", "C", "impression 3D"],
   openGraph: {
